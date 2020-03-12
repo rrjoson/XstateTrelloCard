@@ -3,12 +3,22 @@ const { assign } = actions;
 
 export const todosMachine = Machine({
   id: "todos",
-  initial: "all",
+  initial: "initializing",
   context: {
-    todo: "", // new todo
+    todo: "",
     todos: []
   },
   states: {
+    initializing: {
+      entry: assign({
+        todos: (ctx, e) => {
+          return ctx.todos;
+        }
+      }),
+      on: {
+        "": "all"
+      }
+    },
     all: { on: { "NEWTODO.OPEN": "adding" } },
     adding: {
       on: {
@@ -17,12 +27,9 @@ export const todosMachine = Machine({
           target: "all",
           actions: [
             assign({
-              todo: "", // clear todo
+              todo: "",
               todos: (ctx, e) => {
-                const newTodo = { id: 1 };
-                return ctx.todos.concat({
-                  ...newTodo
-                });
+                return ctx.todos.concat(ctx.todo);
               }
             })
           ]

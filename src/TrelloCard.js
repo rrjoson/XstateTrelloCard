@@ -2,12 +2,21 @@ import React from "react";
 import { useMachine } from "@xstate/react";
 import { todosMachine } from "./todosMachine";
 
+const persistedTodosMachine = todosMachine.withContext({
+  todos: [
+    "Add colors",
+    "Add background color",
+    "Check the responsive layout on all devices"
+  ]
+});
+
 export const TrelloCard = () => {
-  const [state, send] = useMachine(todosMachine);
+  const [state, send] = useMachine(persistedTodosMachine);
 
   const handleOpenInput = () => {
     send("NEWTODO.OPEN");
   };
+
   const handleInputChange = e => {
     send("NEWTODO.CHANGE", { value: e.target.value });
   };
@@ -15,7 +24,6 @@ export const TrelloCard = () => {
   const handleSave = () => {
     send("NEWTODO.COMMIT");
   };
-  console.log(state);
 
   return (
     <div class="bg-white h-screen w-screen flex items-center justify-center">
@@ -31,18 +39,13 @@ export const TrelloCard = () => {
           </svg>
         </div>
         <div class="text-sm mt-2">
-          <div class="bg-white p-2 rounded mt-1 border-b border-grey cursor-pointer hover:bg-grey-lighter">
-            Add colors
-          </div>
-
-          <div class="bg-white p-2 rounded mt-1 border-b border-grey cursor-pointer hover:bg-grey-lighter">
-            Add background color
-          </div>
-
-          <div class="bg-white p-2 rounded mt-1 border-b border-grey cursor-pointer hover:bg-grey-lighter">
-            Check the responsive layout on all devices
-          </div>
-          {state.context.todos.map(i => i.id)}
+          {state.context.todos.map(e => {
+            return (
+              <div class="bg-white p-2 rounded mt-1 border-b border-grey cursor-pointer hover:bg-grey-lighter">
+                {e}
+              </div>
+            );
+          })}
           <p class="mt-3 text-grey-dark" onClick={handleOpenInput}>
             Add a card...
           </p>
